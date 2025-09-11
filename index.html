@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skellium Games Logo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0d0d0d;
+            font-family: 'Metal Mania', cursive;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #b8c4c2;
+            padding: 2rem;
+            transition: all 0.5s ease-in-out;
+            overflow: hidden; /* Prevents scrollbars during transitions */
+        }
+
+        .header-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.5s ease-in-out;
+            padding-top: 2rem;
+        }
+
+        .header-container.moved {
+            transform: translateY(-25vh); /* Adjusted value to prevent it going off screen */
+        }
+
+        .logo-text {
+            font-size: 4rem;
+            text-shadow: 0 0 5px #707a78, 0 0 10px #707a78, 0 0 15px #707a78;
+            letter-spacing: 0.1em;
+            line-height: 1;
+            transform: skew(-10deg);
+            transition: all 0.5s ease-in-out;
+        }
+
+        .periodic-ga, .periodic-li {
+            display: inline-block;
+            position: relative;
+            font-size: 1em;
+            font-family: 'Metal Mania', cursive;
+            padding: 0.2em 0.2em 0.1em;
+            border: 2px solid #b8c4c2;
+            border-radius: 6px;
+            background-color: rgba(42, 42, 42, 0.7);
+            margin: 0 0.2em;
+            line-height: 1;
+        }
+
+        .atomic-number {
+            position: absolute;
+            top: -0.1em;
+            left: 0.2em;
+            font-size: 0.4em;
+            font-family: sans-serif;
+            line-height: 1;
+            color: #8eb0a8;
+        }
+        
+        .sigma-symbol {
+            font-size: 1em;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .top-nav-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .game-button {
+            font-family: 'Metal Mania', cursive;
+            background-color: transparent;
+            color: #b8c4c2;
+            border: 2px solid #b8c4c2;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            text-shadow: 0 0 5px #707a78;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            text-transform: uppercase;
+        }
+
+        .game-button.small {
+            font-size: 1rem;
+            padding: 0.3rem 0.8rem;
+        }
+
+        .game-button.back-button {
+            background-color: rgba(184, 196, 194, 0.1); /* Differentiates from other small buttons */
+        }
+        
+        .game-button.delete-button {
+            background-color: rgba(255, 0, 0, 0.1);
+            color: #ffcccc;
+            border-color: #ffcccc;
+        }
+
+        .game-button:hover {
+            background-color: rgba(184, 196, 194, 0.1);
+            text-shadow: 0 0 10px #8eb0a8, 0 0 20px #8eb0a8;
+            transform: translateY(-2px) scale(1.05);
+        }
+        
+        .game-button.delete-button:hover {
+            background-color: rgba(255, 0, 0, 0.2);
+            text-shadow: 0 0 10px #ffcccc, 0 0 20px #ffcccc;
+        }
+
+        .sub-buttons-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .sub-buttons-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .random-game-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Roulette wheel animation */
+        @keyframes pulse-glow {
+            0% { text-shadow: 0 0 5px #707a78; }
+            50% { text-shadow: 0 0 10px #8eb0a8, 0 0 20px #8eb0a8; }
+            100% { text-shadow: 0 0 5px #707a78; }
+        }
+
+        .roulette-active {
+            animation: pulse-glow 0.8s infinite;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #2a2a2a;
+            padding: 2rem;
+            border: 2px solid #b8c4c2;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            font-family: 'Metal Mania', cursive;
+        }
+        
+        .modal-content h2 {
+            font-size: 1.5rem;
+            text-align: center;
+            color: #b8c4c2;
+        }
+
+        .modal-content input {
+            background-color: #0d0d0d;
+            border: 1px solid #707a78;
+            padding: 0.5rem;
+            border-radius: 6px;
+            color: #b8c4c2;
+            font-family: sans-serif;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #b8c4c2;
+        }
+
+        /* New message modal styles */
+        #messageModal .modal-content {
+            text-align: center;
+        }
+        #messageModal p {
+            font-family: sans-serif;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .logo-text {
+                font-size: 2rem;
+                transform: skew(-5deg);
+            }
+            .header-container.moved {
+                transform: translateY(-30vh);
+            }
+            .game-button {
+                font-size: 1rem;
+            }
+            .modal-content {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container" id="headerContainer">
+        <div class="logo-text" id="logo">
+            SKΣ&#8201;L<span class="periodic-li"><span class="atomic-number">3</span>Li</span>um <span class="periodic-ga"><span class="atomic-number">31</span>Ga</span>m±s
+        </div>
+        <button class="game-button mt-8" id="enterButton">Click to enter</button>
+        <div class="random-game-actions" id="randomGameActions">
+            <button class="game-button small mt-4" id="featuredButton">Play a Random Game</button>
+        </div>
+        <button class="game-button small mt-4" id="addGameButton">Add a Game</button>
+    </div>
+
+    <div class="buttons-container" id="buttonContainer"></div>
+
+    <!-- The Add Game Modal -->
+    <div id="addGameModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModal">&times;</span>
+            <h2>Add a New Game</h2>
+            <input type="password" id="gamePassword" placeholder="Password">
+            <input type="text" id="gameName" placeholder="Game Name">
+            <input type="text" id="gameUrl" placeholder="Game URL">
+            <div class="modal-actions">
+                <button class="game-button small" id="submitGame">Submit Game</button>
+                <button class="game-button small back-button" id="cancelGame">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Message Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <h2 id="messageTitle"></h2>
+            <p id="messageText"></p>
+            <button class="game-button small" id="messageOkButton">OK</button>
+        </div>
+    </div>
+
+    <script>
+        const headerContainer = document.getElementById('headerContainer');
+        const buttonContainer = document.getElementById('buttonContainer');
+        const enterButton = document.getElementById('enterButton');
+        const featuredButton = document.getElementById('featuredButton');
+        const addGameButton = document.getElementById('addGameButton');
+        const addGameModal = document.getElementById('addGameModal');
+        const closeModalButton = document.getElementById('closeModal');
+        const submitGameButton = document.getElementById('submitGame');
+        const cancelGameButton = document.getElementById('cancelGame');
+        const messageModal = document.getElementById('messageModal');
+        const messageTitle = document.getElementById('messageTitle');
+        const messageText = document.getElementById('messageText');
+        const messageOkButton = document.getElementById('messageOkButton');
+        const randomGameActions = document.getElementById('randomGameActions');
+        
+        const gameLinks = {
+            maths: [
+                { name: 'connections', url: 'https://mathswall.netlify.app/' },
+                { name: 'darts quiz', url: 'https://dartsquiz.netlify.app/' },
+                { name: 'Merge Blitz', url: 'https://zubidrop.netlify.app/' },
+                { name: 'Pi Quiz', url: 'https://zupi.netlify.app/' },
+                { name: 'Maths Time Machine', url: 'https://mathsmachine.netlify.app' },
+                { name: 'Triple merge', url: 'https://3mergezubi.netlify.app' },
+                { name: 'TripleMerge2', url: 'https://tripzmerge.netlify.app/' },
+                { name: 'higher/lower bingo', url: 'https://zubihighlow.netlify.app/' }
+            ],
+            science: [
+                { name: 'elemental', url: 'https://elementalv1.netlify.app/' },
+                { name: 'Periodic table', url: 'https://tedbi.netlify.app/' },
+                { name: 'Molecule Merge', url: 'https://atomdropv1.netlify.app/' },
+                { name: 'Elements house', url: 'https://elementshousev1.netlify.app/' }
+            ],
+            geography: [
+                { name: 'Higher or lower', url: 'https://higherlowerpopulations.netlify.app/' }
+            ],
+            other: [
+                { name: 'Zubi code', url: 'https://zubitranslate.netlify.app/' },
+                { name: 'MathLink Masters', url: 'https://mathlinkv1.netlify.app/' },
+                { name: 'ADHD Focus Zombie game', url: 'https://zombiefocus.netlify.app/' },
+                { name: 'dice game', url: 'https://zubidiceoutside.netlify.app/' },
+                { name: 'Darts companion', url: 'https://champofdarts.netlify.app/' },
+                { name: 'Darts Merge', url: 'https://dartmerge.netlify.app/' },
+                { name: 'Ipad timer', url: 'https://ipadtime.netlify.app/' },
+                { name: 'Poop Game', url: 'https://zubidice2.netlify.app' },
+                { name: 'Homework tycoon', url: 'https://homeorktycoon.netlify.app/' }
+            ],
+            platform: [
+                { name: 'blockzubi', url: 'https://global.julianseditor.com/app/GD%3A4096656%3A31/?p=eyJyb29tSWQiOiIiLCJyb2xlSWQiOiI0MDk2NjU2IiwibmFtZSI6ImJsb2NrenViaSIsImNvcmVWZXIiOiI0LjIyLjE5K2J1aWxkLjYxIn0=&tap=1' },
+                { name: 'TimmerClock', url: 'https://global.julianseditor.com/app/GD%3A4096656%3A71/?p=eyJyb29tSWQiOiIiLCJyb2xlSWQiOiI0MDk2NjU2IiwiY29yZVZlciI6IjMuMjIuNzcrYnVpbGQuMjAzIiwibmFtZSI6IjQwMTY2NDc0OCIsIm1vZGUiOiIxIiwiZ2FtZUlkIjoiR0Q6NDA5NjY1Njo3MSJ9&tap=1' },
+                { name: 'MultiplayerMap', url: 'https://global.julianseditor.com/app/GD%3A4096656%3A79/?p=eyJyb29tSWQiOiIiLCJyb2xlSWQiOiI0MDk2NjU2IiwibmFtZSI6Im11bHRpcGxheWVyJTIwcGxhdGZvcm1lciUyMG1hcCIsImNvcmVWZXIiOiIzLjIyLjc3K2J1aWxkLjIwMyIsIm1vZGUiOiIxIiwiZ2FtZUlkIjoiR0Q6NDA5NjY1Njo3OSJ9&tap=1' }
+            ],
+            space: [
+                { name: 'Space Time Machine', url: 'https://spacetimemachine.netlify.app' },
+                { name: 'Space Trip', url: 'https://spacezubi.netlify.app/' },
+                { name: 'Space Calculator', url: 'https://zubispace.netlify.app/' }
+            ],
+            useraddedgames: []
+        };
+
+        const isValidUrl = (url) => {
+            try {
+                new URL(url);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        };
+
+        const showMessage = (title, message) => {
+            messageTitle.textContent = title;
+            messageText.textContent = message;
+            messageModal.style.display = 'flex';
+        };
+
+        const createButton = (text, onClick, isSmall = false, isBack = false) => {
+            const button = document.createElement('button');
+            button.className = `game-button ${isSmall ? 'small' : ''} ${isBack ? 'back-button' : ''}`;
+            button.textContent = text;
+            button.onclick = onClick;
+            return button;
+        };
+
+        const renderMainCategories = () => {
+            buttonContainer.innerHTML = '';
+            buttonContainer.style.flexDirection = 'column';
+            
+            const categories = Object.keys(gameLinks);
+            categories.forEach(category => {
+                if (gameLinks[category].length > 0) {
+                    const button = createButton(
+                        category.charAt(0).toUpperCase() + category.slice(1).replace('games', ' Games'), 
+                        () => renderSubButtons(category)
+                    );
+                    buttonContainer.appendChild(button);
+                }
+            });
+        };
+
+        const renderSubButtons = (category) => {
+            buttonContainer.innerHTML = '';
+            buttonContainer.style.flexDirection = 'column';
+
+            const topNavRow = document.createElement('div');
+            topNavRow.className = 'top-nav-row';
+            topNavRow.appendChild(createButton('Home', () => renderMainCategories(), true));
+            topNavRow.appendChild(createButton('Back', () => renderMainCategories(), true, true));
+
+            Object.keys(gameLinks).forEach(cat => {
+                if (gameLinks[cat].length > 0) {
+                    const catButton = createButton(
+                        cat.charAt(0).toUpperCase() + cat.slice(1).replace('games', ' Games'), 
+                        () => renderSubButtons(cat), 
+                        true
+                    );
+                    topNavRow.appendChild(catButton);
+                }
+            });
+            buttonContainer.appendChild(topNavRow);
+
+            const games = gameLinks[category];
+            if (games && games.length > 0) {
+                const gamesGrid = document.createElement('div');
+                gamesGrid.className = 'sub-buttons-grid';
+                games.forEach(game => {
+                    const button = createButton(game.name, () => window.open(game.url, '_blank'));
+                    gamesGrid.appendChild(button);
+                });
+                buttonContainer.appendChild(gamesGrid);
+            } else {
+                const message = document.createElement('p');
+                message.textContent = "No games available for this category yet.";
+                message.style.fontFamily = "'Metal Mania', cursive";
+                message.style.color = "#b8c4c2";
+                message.style.fontSize = "1.2rem";
+                buttonContainer.appendChild(message);
+            }
+        };
+
+        enterButton.addEventListener('click', () => {
+            headerContainer.classList.add('moved');
+            enterButton.style.display = 'none';
+            randomGameActions.style.display = 'flex';
+            addGameButton.style.display = 'none';
+            setTimeout(renderMainCategories, 500);
+        });
+
+        featuredButton.addEventListener('click', () => {
+            const allGames = Object.values(gameLinks).flat();
+            if (allGames.length === 0) {
+                showMessage("No Games", "No games available to play.");
+                return;
+            }
+            
+            // Clear any existing "Open Game" button
+            const existingOpenButton = document.getElementById('openGameButton');
+            if (existingOpenButton) {
+                existingOpenButton.remove();
+            }
+
+            featuredButton.disabled = true;
+            featuredButton.classList.add('roulette-active');
+            let spinCount = 0;
+            const spinInterval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * allGames.length);
+                featuredButton.textContent = allGames[randomIndex].name;
+                spinCount++;
+                if (spinCount > 20) { // Cycle through at least 20 times for a good visual effect
+                    clearInterval(spinInterval);
+                    featuredButton.classList.remove('roulette-active');
+                    const finalRandomIndex = Math.floor(Math.random() * allGames.length);
+                    const finalGame = allGames[finalRandomIndex];
+                    
+                    featuredButton.textContent = finalGame.name;
+                    featuredButton.disabled = false;
+                    
+                    const openButton = createButton('Open Game', () => window.open(finalGame.url, '_blank'), true);
+                    openButton.id = 'openGameButton';
+                    randomGameActions.appendChild(openButton);
+                }
+            }, 50); // Fast spin
+        });
+        
+        // Add Game functionality
+        addGameButton.addEventListener('click', () => {
+            addGameModal.style.display = 'flex';
+        });
+        
+        closeModalButton.addEventListener('click', () => {
+            addGameModal.style.display = 'none';
+        });
+
+        cancelGameButton.addEventListener('click', () => {
+            addGameModal.style.display = 'none';
+        });
+        
+        submitGameButton.addEventListener('click', () => {
+            const password = document.getElementById('gamePassword').value;
+            const name = document.getElementById('gameName').value;
+            const url = document.getElementById('gameUrl').value;
+            
+            const correctPassword = 'Azubuike6';
+            
+            if (password !== correctPassword) {
+                showMessage("Invalid Password", "The password you entered is incorrect. Please try again.");
+                return;
+            }
+            
+            if (name.trim() === '' || url.trim() === '') {
+                showMessage("Missing Information", "Please enter both a game name and a URL.");
+                return;
+            }
+
+            if (!isValidUrl(url)) {
+                showMessage("Invalid URL", "The URL you entered is invalid. Please make sure it's a full URL, like https://example.com");
+                return;
+            }
+            
+            // Add the new game
+            gameLinks.useraddedgames.push({ name: name, url: url });
+            addGameModal.style.display = 'none';
+            document.getElementById('gamePassword').value = '';
+            document.getElementById('gameName').value = '';
+            document.getElementById('gameUrl').value = '';
+            
+            // Re-render the categories to show the new one
+            renderMainCategories();
+        });
+        
+        messageOkButton.addEventListener('click', () => {
+            messageModal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', (event) => {
+            if (event.target === addGameModal) {
+                addGameModal.style.display = 'none';
+            }
+            if (event.target === messageModal) {
+                messageModal.style.display = 'none';
+            }
+        });
+
+    </script>
+</body>
+</html>
